@@ -8,3 +8,8 @@
 # System files (optional)
 .DS_Store
 Thumbs.db
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
