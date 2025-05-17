@@ -3,6 +3,8 @@ package com.example.Arithmetic.core;
 import com.example.Arithmetic.io.BitInputStream;
 import com.example.Arithmetic.util.FrequencyTable;
 
+import java.io.IOException;
+
 public class ArithmeticDecoder {
 
     private static final long MAX_RANGE = 0xFFFFFFFFL;
@@ -29,7 +31,7 @@ public class ArithmeticDecoder {
         System.out.printf("[INIT] Initial code: 0x%08X%n", code);
     }
 
-    public int read(FrequencyTable freqTable) {
+    public int read(FrequencyTable freqTable) throws IOException {
         long range = (high - low + 1) & MAX_RANGE;
         if (range == 0) range = MAX_RANGE + 1L;
 
@@ -39,7 +41,6 @@ public class ArithmeticDecoder {
         long value = ((offset + 1) * total - 1) / range;
         System.out.printf("[DEBUG] Offset=%d, Code=%d, Low=%d, High=%d, Range=%d%n", offset, code, low, high, range);
         System.out.printf("[DEBUG] Total=%d, Value=%d%n", total, value);
-
 
         if (value < 0 || value >= total) {
             System.err.printf("[ERROR] value=%d out of bounds [0,%d) (offset=%d, range=%d)%n",
@@ -61,19 +62,21 @@ public class ArithmeticDecoder {
         high = newHigh & MAX_RANGE;
 
         while (true) {
-            if ((high & 0x80000000L) == (low & 0x80000000L)) {
-                low = ((low << 1) & MAX_RANGE);
-                high = ((high << 1) & MAX_RANGE) | 1;
-                code = ((code << 1) & MAX_RANGE) | readBit();
-                System.out.printf("[SHIFT] Code=0x%08X, Low=%d, High=%d%n", code, low, high);
-            } else if ((low & 0x40000000L) != 0 && (high & 0x40000000L) == 0) {
-                low = ((low << 1) ^ 0x80000000L) & MAX_RANGE;
-                high = (((high ^ 0x80000000L) << 1) | 1) & MAX_RANGE;
-                code = ((code ^ 0x80000000L) << 1 | readBit()) & MAX_RANGE;
-                System.out.printf("[UNDERFLOW] Code=0x%08X, Low=%d, High=%d%n", code, low, high);
+            if (high < 0x80000000L) {
+            } else if (low >= 0x80000000L) {
+                code -= 0x80000000L;
+                low -= 0x80000000L;
+                high -= 0x80000000L;
+            } else if (low >= 0x40000000L && high < 0xC0000000L) {
+                code -= 0x40000000L;
+                low -= 0x40000000L;
+                high -= 0x40000000L;
             } else {
                 break;
             }
+            low = (low << 1) & MAX_RANGE;
+            high = ((high << 1) & MAX_RANGE) | 1;
+            code = ((code << 1) & MAX_RANGE) | readBit();
         }
 
         return symbol;

@@ -11,8 +11,8 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) {
         // Hardcoded file paths
-//        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/download.png");
-        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/sample.txt");         // Replace with your input file path
+        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/20010869_compiler1.pdf");
+//        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/sample.txt");         // Replace with your input file path
         File parentDir = inputFile.getParentFile();
         if (parentDir == null) {
             parentDir = new File("."); // current directory if no parent
