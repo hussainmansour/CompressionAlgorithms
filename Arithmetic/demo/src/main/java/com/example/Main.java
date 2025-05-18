@@ -2,7 +2,6 @@ package com.example;
 
 import com.example.Arithmetic.io.FileCompressor;
 import com.example.Arithmetic.io.FileDecompressor;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,48 +9,62 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        // Hardcoded file paths
-        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/20010869_compiler1.pdf");
-//        File inputFile = new File("/home/abdelrahman/IdeaProjects/CompressionAlgorithms/Arithmetic/demo/input/sample.txt");         // Replace with your input file path
-        File parentDir = inputFile.getParentFile();
-        if (parentDir == null) {
-            parentDir = new File("."); // current directory if no parent
+        // Get paths relative to project root
+        File projectRoot = new File(System.getProperty("user.dir"));
+        File inputDir = new File(projectRoot, "input");
+        File outputDir = new File(projectRoot, "output");
+
+        // Create output directory if it doesn't exist
+        if (!outputDir.exists()) {
+            outputDir.mkdir();
         }
 
-        // Construct output files in the same directory as input
-        File compressedFile = new File(parentDir, inputFile.getName() + ".compressed");
-        File decompressedFile = new File(parentDir, "decompressed_" + inputFile.getName());
+        // Process all files in input directory
+        File[] inputFiles = inputDir.listFiles();
+        if (inputFiles == null || inputFiles.length == 0) {
+            System.out.println("No files found in input directory");
+            return;
+        }
 
+        FileCompressor compressor = new FileCompressor();
+        FileDecompressor decompressor = new FileDecompressor();
 
-        try {
-            // Read original data size
-            long inputSize = inputFile.length();
+        for (File inputFile : inputFiles) {
+            if (inputFile.isDirectory()) {
+                continue; // Skip subdirectories
+            }
 
-            // Compress
-            FileCompressor compressor = new FileCompressor();
-            compressor.compress(inputFile, compressedFile);
+            System.out.println("\nProcessing: " + inputFile.getName());
 
-            // Decompress (need to pass original size)
-            FileDecompressor decompressor = new FileDecompressor();
-            decompressor.decompress(compressedFile, decompressedFile);
+            // Prepare output paths
+            String baseName = inputFile.getName();
+            File compressedFile = new File(outputDir, baseName + ".compressed");
+            File decompressedFile = new File(outputDir, "decompressed_" + baseName);
 
-            // Verify decompressed matches original
-            byte[] originalBytes = Files.readAllBytes(inputFile.toPath());
-            byte[] decompressedBytes = Files.readAllBytes(decompressedFile.toPath());
+            try {
+                // Compression
+                System.out.println("Compressing...");
+                compressor.compress(inputFile, compressedFile);
 
-            boolean isMatch = Arrays.equals(originalBytes, decompressedBytes);
+                // Decompression
+                System.out.println("Decompressing...");
+                decompressor.decompress(compressedFile, decompressedFile);
 
-            // Print stats
-            long compressedSize = compressedFile.length();
-            double ratio = (double) compressedSize / inputSize;
+                // Verification
+                byte[] original = Files.readAllBytes(inputFile.toPath());
+                byte[] decompressed = Files.readAllBytes(decompressedFile.toPath());
+                boolean isMatch = Arrays.equals(original, decompressed);
 
-            System.out.println("Input file size:      " + inputSize + " bytes");
-            System.out.println("Compressed file size: " + compressedSize + " bytes");
-            System.out.printf("Compression ratio:    %.3f\n", ratio);
-            System.out.println("Decompression match:  " + (isMatch ? "SUCCESS" : "FAILURE"));
+                System.out.println("Verification: " + (isMatch ? "SUCCESS" : "FAILURE"));
+                System.out.println("Original size: " + original.length + " bytes");
+                System.out.println("Compressed size: " + compressedFile.length() + " bytes");
+                System.out.printf("Compression ratio: %.2f%%\n",
+                        (1 - (double)compressedFile.length()/original.length) * 100);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Error processing " + inputFile.getName());
+                e.printStackTrace();
+            }
         }
     }
 }
