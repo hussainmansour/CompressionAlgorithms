@@ -13,7 +13,7 @@ public class FileDecompressor {
              OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
 
             int symbolCount = dataIn.readInt();
-            System.out.println("[DEBUG] Symbol count: " + symbolCount);
+//            System.out.println("[DEBUG] Symbol count: " + symbolCount);
 
             int[] frequencies = new int[symbolCount];
             for (int i = 0; i < symbolCount; i++) {
@@ -23,9 +23,9 @@ public class FileDecompressor {
             FrequencyTable freqTable = new FrequencyTable(symbolCount);
             freqTable.setFrequencies(frequencies);
 
-            System.out.println("\n== Frequency Table from Compressed File ==");
+//            System.out.println("\n== Frequency Table from Compressed File ==");
             printFrequencyTable(freqTable);
-            System.out.println("===========================================\n");
+//            System.out.println("===========================================\n");
 
             if (freqTable.getTotal() == 0) {
                 throw new IllegalStateException("Decoded frequency table has total frequency = 0");
@@ -36,9 +36,10 @@ public class FileDecompressor {
             int symbolIndex = 0;
             while (true) {
                 int symbol = decoder.read(freqTable);
-                System.out.printf("[DEBUG] Decoded symbol #%d: %d (%c)%n", symbolIndex, symbol, (char) symbol);
+//                System.out.printf("[DEBUG] Decoded symbol #%d: %d (%c)%n", symbolIndex, symbol, (char) symbol);
                 if (symbol == 256) { // EOF
                     System.out.println("[DEBUG] Reached EOF symbol.");
+                    out.flush();
                     break;
                 }
                 out.write(symbol);
@@ -53,10 +54,10 @@ public class FileDecompressor {
         for (int i = 0; i < symbolCount; i++) {
             int freq = freqTable.getFrequency(i);
             if (freq > 0) {
-                System.out.printf("Symbol %3d (%c): Frequency = %d%n", i, (i >= 32 && i <= 126) ? (char) i : '?', freq);
+//                System.out.printf("Symbol %3d (%c): Frequency = %d%n", i, (i >= 32 && i <= 126) ? (char) i : '?', freq);
                 total += freq;
             }
         }
-        System.out.println("Total frequency: " + total);
+//        System.out.println("Total frequency: " + total);
     }
 }

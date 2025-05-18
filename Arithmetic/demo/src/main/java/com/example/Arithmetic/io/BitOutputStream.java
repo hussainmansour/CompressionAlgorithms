@@ -29,10 +29,16 @@ public class BitOutputStream implements AutoCloseable {
     }
 
     public void flush() throws IOException {
-        while (numBitsFilled != 0)
-            write(0); // Pad with zeros
+        if (numBitsFilled > 0) {
+            // Pad the remaining bits with zeros on the right
+            currentByte <<= (8 - numBitsFilled);  // shift left to fill the rest with 0s
+            output.write(currentByte);
+            currentByte = 0;
+            numBitsFilled = 0;
+        }
         output.flush();
     }
+
 
     public void close() throws IOException {
         flush();

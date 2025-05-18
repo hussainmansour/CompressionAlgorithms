@@ -31,10 +31,10 @@ public class FileCompressor {
             // Encode all symbols
             ArithmeticEncoder encoder = new ArithmeticEncoder(bitOut);
             for (byte b : inputData) {
-                System.out.printf("[ENCODE] Symbol: %d (%c)%n", b, (char) b);
+//                System.out.printf("[ENCODE] Symbol: %d (%c)%n", b, (char) b);
                 encoder.write(freqTable, b & 0xFF);
             }
-            System.out.printf("[ENCODE] Symbol: %d (%c)%n", 256, (char) 256);
+//            System.out.printf("[ENCODE] Symbol: %d (%c)%n", 256, (char) 256);
             encoder.write(freqTable, 256); // EOF symbol
             encoder.finish();
         }

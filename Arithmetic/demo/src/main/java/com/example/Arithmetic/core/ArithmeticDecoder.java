@@ -28,7 +28,7 @@ public class ArithmeticDecoder {
         for (int i = 0; i < 32; i++) {
             code = (code << 1) | readBit();
         }
-        System.out.printf("[INIT] Initial code: 0x%08X%n", code);
+//        System.out.printf("[INIT] Initial code: 0x%08X%n", code);
     }
 
     public int read(FrequencyTable freqTable) throws IOException {
@@ -39,8 +39,8 @@ public class ArithmeticDecoder {
         long offset = (code - low) & MAX_RANGE;
 
         long value = ((offset + 1) * total - 1) / range;
-        System.out.printf("[DEBUG] Offset=%d, Code=%d, Low=%d, High=%d, Range=%d%n", offset, code, low, high, range);
-        System.out.printf("[DEBUG] Total=%d, Value=%d%n", total, value);
+//        System.out.printf("[DEBUG] Offset=%d, Code=%d, Low=%d, High=%d, Range=%d%n", offset, code, low, high, range);
+//        System.out.printf("[DEBUG] Total=%d, Value=%d%n", total, value);
 
         if (value < 0 || value >= total) {
             System.err.printf("[ERROR] value=%d out of bounds [0,%d) (offset=%d, range=%d)%n",
@@ -55,8 +55,8 @@ public class ArithmeticDecoder {
         long newLow = low + (range * symLow) / total;
         long newHigh = low + (range * symHigh) / total - 1;
 
-        System.out.printf("[DECODE] Symbol: %d | Value=%d, symLow=%d, symHigh=%d | Range: %d | New Low=%d, High=%d%n",
-                symbol, value, symLow, symHigh, range, newLow, newHigh);
+//        System.out.printf("[DECODE] Symbol: %d | Value=%d, symLow=%d, symHigh=%d | Range: %d | New Low=%d, High=%d%n",
+//                symbol, value, symLow, symHigh, range, newLow, newHigh);
 
         low = newLow & MAX_RANGE;
         high = newHigh & MAX_RANGE;
