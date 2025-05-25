@@ -35,14 +35,15 @@ public class HuffmanCompressor {
         int limit = 8;
         int z;//for debugging
         byte[] outBuffer = new byte[10000000];
+        byte[] buffer = new byte[100*1024*1024];
         int indx = 0;
-        while ((z = in.available()) > 0) {
-            byte[] buffer = in.readNBytes(100*1024*1024);
-            for (int i = 0; i < buffer.length;i++) {
-                Byte chunk = buffer[i];
+        
+        while ((z = in.read(buffer)) != -1) {
+            for (int i=0; i < z; i++) {
+                byte chunk = buffer[i];
                 Data data = dictionary.get(chunk);
                 if (data == null) {
-                    System.out.println("chunk = " + chunk);
+                    System.err.println("chunk = " + chunk);
                 }
                 for (int k = data.len - 1; k >= 0; k--) {
                     if (limit == 0) {
@@ -56,7 +57,7 @@ public class HuffmanCompressor {
                         limit = 8;
                     }
                     writingBuffer = writingBuffer << 1;
-                    if ((data.code & (1L << k)) > 0) {
+                    if ((data.code & (1L << k)) != 0) {
                         writingBuffer |= 1;
                     }
                     limit--;
@@ -68,7 +69,7 @@ public class HuffmanCompressor {
             indx = 0;
         }
 
-        if (limit < 7) {
+        if (limit < 8) {
             while (limit > 0) {
                 writingBuffer = writingBuffer << 1;
                 limit--;

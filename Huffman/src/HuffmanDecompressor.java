@@ -26,12 +26,13 @@ public class HuffmanDecompressor {
         long fileBytesCount = embedder.fileBytes;
         long bitCount = in.readLong();
         Data sequence = new Data(0, 0);
-        int z;// for debugging;
+        int z=-1;// for debugging;
         byte[] outBuffer = new byte[10000000];
+        byte[] buffer = new byte[100*1024*1024];
         int indx = 0;
-        while ((bitCount > 0) && (z = in.available()) > 0) {
-            byte[] buffer = in.readNBytes(100*1024*1024);
-            for (byte b : buffer) {
+        while ((bitCount > 0) && (z = in.read(buffer)) !=-1) {
+            for (int k=0;k < z; k++) {
+                byte b = buffer[k];
                 for (int i = 7; i >= 0; i--) {
                     if (bitCount == 0)
                         break;
@@ -64,7 +65,8 @@ public class HuffmanDecompressor {
             System.err.println("fileBytesCount = " + fileBytesCount);
             System.err.println("indx = " + indx);
             System.err.println("outBuffer.length = " + outBuffer.length);
-            System.err.println("outBuffer = " + outBuffer);
+            System.err.println("z = " + z);
+            System.err.println("bitCount = " + bitCount);
         }
         long now = System.currentTimeMillis();
         in.close();
