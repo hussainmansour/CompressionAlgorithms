@@ -15,9 +15,10 @@ public class FrequencyCounter {
     HashMap<Byte, Data> countFrequency() throws IOException {
 
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(filePath));
-        while (in.available() > 0) {
-            byte[] buffer = in.readNBytes(100*1024*1024);
-            this.bytesNumber += buffer.length;
+        byte[] buffer = new byte[100*1024*1024];
+        int bytesRead;
+        while ((bytesRead= in.read(buffer)) != -1) {
+            this.bytesNumber += bytesRead;
             for (int i = 0; i < buffer.length;i++) {
                 frequencyTable.put(buffer[i], frequencyTable.getOrDefault(buffer[i], new Data(0)).increment());
             }

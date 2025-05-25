@@ -38,7 +38,6 @@ public class DictionaryEmbedder {
         int mapSize = in.readInt();
         extracted = new HashMap<>(mapSize);
         for (int i = 0; i < mapSize; i++) {
-            int keyLength = in.readInt();
             byte[] word = in.readNBytes(1);
             Byte chunk = word[0];
             int len = in.readByte();
