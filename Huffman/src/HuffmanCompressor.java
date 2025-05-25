@@ -4,7 +4,7 @@ import java.util.HashMap;
 public class HuffmanCompressor {
 
     private String filepath;
-    private int wordSize = 1;
+    // private int wordSize = 1;
 
     public HuffmanCompressor(String filepath) {
         this.filepath = filepath;
@@ -25,7 +25,7 @@ public class HuffmanCompressor {
         HashMap<Byte, Data> dictionary = generator.getDictionary();
         DictionaryEmbedder embedder = new DictionaryEmbedder(dictionary, fc.bytesNumber);
         FileNameManipulator fm = new FileNameManipulator();
-        String compressedFilePath = fm.compressedFilePath(filepath, wordSize);
+        String compressedFilePath = fm.compressedFilePath(filepath);
         DataOutputStream out = new DataOutputStream(new FileOutputStream(compressedFilePath));
         embedder.embedDictionary(out);
         long expectedBitCount = getExpectedNumberOfBits(dictionary);
